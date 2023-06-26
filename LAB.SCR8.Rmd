@@ -1,0 +1,191 @@
+---
+title: "Untitled"
+author: "David"
+date: "2023-05-22"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+```{r}
+file.choose()
+```
+
+```{r}
+ruta_excel4 <- "C:\\Screening6\\S8DATA4Rv2.xlsx"
+dataS8 <- read_excel(ruta_excel4)
+dataS8
+```
+
+```{r}
+
+dataS8$Energy <- as.factor(dataS8$Energy)
+str(dataS8)
+```
+
+```{r}
+graphS8.1 <- ggplot(dataS8,aes(x = Energy , y = Folin, color=Pretratamiento)) +labs(y= "Contenido polifenólico", x = "Energía (J/ml)", title = "C") +
+geom_boxplot()
+graphS8.1
+```
+
+```{r}
+graphS8.1.2 <- ggplot(dataS8,aes(x = Energy , y = Folin, color=Pretratamiento)) +labs(y= "Contenido polifenólico", x = "Energía (J/ml)", title = "C") +
+geom_point()
+graphS8.1
+```
+
+```{r}
+ggplot(dataS8, aes(x = Energy, y = Folin, fill = Pretratamiento)) + 
+  geom_bar(stat='identity',position = "dodge", width = 0.5) + 
+  xlab("Energía (J/ml)") + ylab("Contenido polifenólico")+ scale_y_continuous(expand = c(0,0)) + 
+  geom_hline(yintercept = mean(dataS8$Folin), linetype = "dashed", linewidth = 1)
+```
+
+```{r}
+ggplot(aes(x = Energy, y = Folin, fill = Pretratamiento), data = dataS8) + scale_y_continuous(expand = c(0,0)) +
+    stat_summary(fun=mean, geom="bar", position = position_dodge(width = 0.9), width = 0.5) + stat_summary(fun.data=mean_sdl,position = position_dodge(width = 0.9) )  +
+    xlab("Energía (J/mL)") + ylab("Contenido polifenólico") +
+  facet_grid(Pretratamiento ~ Celulasa, labeller = label_both)
+```
+
+```{r}
+graphS8.2 <- ggplot(dataS8,aes(x = Energy , y = TEAC)) +labs(y= "Capacidad antioxidante", x = "Energía (J/ml)", title = "A") +
+geom_boxplot() + facet_grid(Pretratamiento ~ Celulasa, labeller = label_both )
+graphS8.2
+```
+
+```{r}
+graphS8.2.2 <- ggplot(dataS8,aes(x = Energy , y = TEAC, color=Pretratamiento)) +labs(y= "Capacidad antioxidante", x = "Energía (J/ml)", title = "A") +
+geom_point()
+graphS8.2
+```
+
+```{r}
+ggplot(dataS8, aes(x = Energy, y = TEAC, fill = Pretratamiento)) + 
+  geom_bar(stat='identity',position = "dodge", width = 0.5) + scale_y_continuous(expand = c(0,0)) + 
+  xlab("Energía (J/ml)") + ylab("Capacidad antioxidante") +
+ 
+  geom_hline(yintercept = mean(dataS8$TEAC), linetype = "dashed", linewidth = 1)
+```
+
+```{r}
+ggplot(aes(x = Energy, y = TEAC, fill = Pretratamiento), data = dataS8) + scale_y_continuous(expand = c(0,0)) +
+    stat_summary(fun=mean, geom="bar", position = position_dodge(width = 0.9), width = 0.5) + stat_summary(fun.data=mean_sdl,position = position_dodge(width = 0.9) ) + geom_hline(yintercept = mean(dataS8$TEAC), linetype = "dashed", linewidth = 1) +
+    xlab("Energía (J/mL)") + ylab("Capacidad antioxidante") + 
+  facet_grid(Pretratamiento ~ Celulasa, labeller = label_both)
+```
+
+```{r}
+graphS8.3 <- ggplot(dataS8,aes(x = Energy , y = Rendimiento, fill=Pretratamiento)) +labs(y= "Rendimiento", x = "Energía (J/ml)", title = "B") +
+geom_boxplot()
+graphS8.3
+```
+
+```{r}
+graphS8.3.2 <- ggplot(dataS8,aes(x = Energy , y = Rendimiento, color=Pretratamiento)) +labs(y= "Rendimiento", x = "Energía (J/ml)", title = "B") +
+geom_point() + 
+graphS8.3.2
+```
+
+```{r}
+ggplot(dataS8, aes(x = Energy, y = Rendimiento, fill = Pretratamiento)) + 
+  geom_bar(stat='identity',position = position_dodge(width = 0.9), width = 0.5) + scale_y_continuous(expand = c(0,0)) +
+  xlab("Energía (J/ml)") + ylab("Rendimiento (%)") + stat_summary(fun.data=mean_sdl,position = position_dodge(width = 0.9) ) 
+```
+
+```{r}
+ ggplot(aes(x = Energy, y = Rendimiento, fill = Pretratamiento), data = dataS8) + scale_y_continuous(expand = c(0,0)) +
+    stat_summary(fun=mean, geom="bar", position = position_dodge(width = 0.9), width = 0.5) + stat_summary(fun.data=mean_sdl,position = position_dodge(width = 0.9) )  +
+    xlab("Energía (J/ml)") + ylab("Rendimiento")
+```
+
+```{r}
+ggplot(data=dataS8, mapping=aes(x = Energy, y = Rendimiento, fill = Pretratamiento)) + 
+  stat_summary(fun.data=mean_sdl) +
+  geom_bar(position = position_dodge(width = 0.9))
+```
+
+```{r}
+sd <- sd(dataS8$Rendimiento)
+ggplot(dataS8, aes(x = Energy, y = Rendimiento, fill = Pretratamiento)) + 
+  geom_bar(stat='identity',position = "dodge", width = 0.5) + scale_y_continuous(expand = c(0,0)) +
+  xlab("Energía (J/ml)") + ylab("Rendimiento") +
+ geom_hline(yintercept = mean(dataS8$Rendimiento), linetype = "dashed", linewidth = 1) + 
+geom_errorbar(aes(ymin=Rendimiento-sd, ymax=Rendimiento+sd), width=0.4, colour="black", position="dodge", linetype = 1)
+```
+
+```{r}
+ggplot(aes(x = Energy, y = Rendimiento, fill = Pretratamiento), data = dataS8) + scale_y_continuous(expand = c(0,0)) +
+    stat_summary(fun=mean, geom="bar", position = position_dodge(width = 0.9), width = 0.5) + stat_summary(fun.data=mean_sdl,position = position_dodge(width = 0.9) )  +
+    xlab("Energía (J/mL)") + ylab("Rendimiento") + 
+  facet_grid(Pretratamiento ~ Celulasa, labeller = label_both)
+```
+
+```{r}
+fit.Folin.J <- lm(Folin ~ Energy, data = dataS8)
+TukeyHSD(fit.Folin.J)
+ols_test_normality(fit.Folin.J)
+```
+
+```{r}
+fit.TEAC.J <- lm(TEAC ~ Energy, data = dataS8)
+TukeyHSD(fit.TEAC.J)
+ols_test_normality(fit.TEAC.J)
+```
+
+```{r}
+fit.Rendimiento.J <- lm(Rendimiento ~ Energy, data = dataS8)
+TukeyHSD(fit.Rendimiento.J)
+ols_test_normality(fit.Rendimiento.J)
+```
+
+```{r}
+ruta_excel5 <- "C:\\Screening6\\S8DATA4Rv3.xlsx"
+dataS8.2 <- read_excel(ruta_excel5)
+dataS8.2
+```
+
+```{r}
+dataS8.2$Energy <- as.factor(dataS8.2$Energy)
+str(dataS8.2)
+fit.Folin.J.2 <- lm(Folin ~ Energy, data = dataS8.2)
+TukeyHSD(fit.Folin.J.2)
+```
+
+```{r}
+fit.TEAC.J.2 <- lm(TEAC ~ Energy, data = dataS8.2)
+TukeyHSD(fit.TEAC.J.2)
+```
+
+```{r}
+ruta_excel6 <- "C:\\Screening6\\S8DATA4Rv4.xlsx"
+dataS8.3 <- read_excel(ruta_excel6)
+dataS8.3
+dataS8.3$Energy <- as.factor(dataS8.3$Energy)
+str(dataS8.3)
+fit.TEAC.J.3 <- lm(TEAC ~ Energy, data = dataS8.3)
+TukeyHSD(fit.TEAC.J.3)
+```

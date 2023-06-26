@@ -1,0 +1,586 @@
+---
+title: "Untitled"
+author: "David"
+date: "2023-04-20"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+# **Screening 6**
+
+### Datos a partir de las medias
+
+**Lectura de datos**
+
+```{r}
+file.choose()
+```
+
+```{r}
+ruta_excel <- "C:\\Screening6\\S6DATA4R.xlsx"
+```
+
+```{r}
+data <- read_excel(ruta_excel)
+data
+```
+
+**Gráficos de cajas y bigotes**
+
+```{r}
+ggplot(data,aes(x = Celulase , y = AntioxidantCapacity)) +
+geom_boxplot()
+```
+
+```{r}
+ggplot(data,aes(x = Celulase , y = PhenolicContent)) +
+geom_boxplot()
+```
+
+```{r}
+ggplot(data,aes(x = Celulase , y = Yield)) +
+geom_boxplot()
+```
+
+```{r}
+graph1<- ggplot(data,aes(x = PajaType , y = AntioxidantCapacity)) +
+  labs(y= "Capacidad antioxidante", x = NULL, title = "A") +
+  geom_boxplot() 
+graph1
+```
+
+```{r}
+graph2<- ggplot(data,aes(x = PajaType , y = PhenolicContent)) + labs(y=    "Contenido polifenólico", x = NULL, title = "B") + 
+  geom_boxplot()
+graph2
+```
+
+```{r}
+graph3<- ggplot(data,aes(x = PajaType , y = Yield)) +labs(y= "Rendimiento", x = NULL, title = "C") +
+ geom_boxplot()
+graph3
+```
+
+*Combinación de los tres gráficos de tipos de paja*
+
+```{r}
+grid.arrange(graph1, graph2, graph3, ncol = 3, widths = c(0.3, 0.3, 0.3), heights = c(0.1, 0.1), layout_matrix = rbind(c(1, 2, 3), c(NA, NA, NA), c(NA, NA, NA)))
+```
+
+Solapamiento de los gráficos
+
+```{r}
+grid.arrange(graph1, graph2, graph3, ncol = 3, widths = c(0.3, 0.3, 0.3), heights = c(1), top = ggtitle("Paja fresca vs seca") + theme(plot.title = element_text(size = 18)))
+```
+
+```{r}
+ggplot(data,aes(x = Celulase , y = Yield, color = PajaType)) + labs(y= "Rendimiento", x = "Celulasa", title = "Efecto del pretratamiento respecto al rendimiento en los dos tipos de paja", color = "Tipo de paja") + theme(
+  plot.title = element_text(size = 11,  hjust = 0.5, face = "bold")
+) + 
+geom_boxplot()
+```
+
+```{r}
+ggplot(data,aes(x = PajaType, y = AntioxidantCapacity , color = Pretratamiento)) + labs(y= "Capacidad antioxidante", x = "Celulasa", title = "Efecto del pretratamiento respecto a la capacidad antioxidante en los dos tipos de paja", color = "Pretratamiento")  + 
+geom_boxplot()
+```
+
+```{r}
+graph4 <- ggplot(data,aes(x = Celulase, y = AntioxidantCapacity , color = Mgcelulasa, legend.position = "none")) + labs(y= "Capacidad antioxidante", x = "Celulasa", title = "A") + theme(axis.title.x = element_text(size=10)) + 
+geom_boxplot(show.legend = FALSE)
+```
+
+```{r}
+graph5 <- ggplot(data,aes(x = Celulase, y = Yield , color = Mgcelulasa)) + labs(y= "Capacidad antioxidante", x = "Celulasa") + labs(y= "Rendimiento", x = "Celulasa", title = "B") + theme(axis.title.x = element_text(size=10)) +
+geom_boxplot(show.legend = FALSE)
+
+```
+
+```{r}
+graph6 <- ggplot(data,aes(x = Celulase, y = PhenolicContent, color = Mgcelulasa)) + labs(y= "Contenido polifenólico", x = "Celulasa", title = "C")  + theme(axis.title.x = element_text(size=10)) + 
+geom_boxplot(show.legend = FALSE)
+```
+
+```{r}
+graph7 <- ggplot(data,aes(x = Celulase, y = Yield , color = Mgcelulasa)) + labs(y= "Capacidad antioxidante", x = "Celulasa") + labs(y= "Rendimiento", x = "Celulasa") + theme(axis.title.x = element_text(size=10)) +  
+geom_boxplot() 
+
+```
+
+```{r}
+legend
+```
+
+*Grid*
+
+```{r}
+arranged_plots <- grid.arrange(graph4, graph5,graph6, legend, ncol=2)
+arranged_plots 
+
+```
+
+```{r}
+grid_arrange_shared_legend(graph4, graph5, graph6, ncol = 2, nrow = 2, position='top')
+```
+
+```{r}
+p <- ggplot(data,aes(x = Celulase, y = AntioxidantCapacity , color = Mgcelulasa, legend.position = "none")) + labs(y= "Capacidad antioxidante", x = "Celulasa", color = "Celulasa (mg)") +
+geom_boxplot()
+# Extract the legend
+g_legend <- function(a.gplot){
+    tmp <- ggplot_gtable(ggplot_build(a.gplot))
+    leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+    legend <- tmp$grobs[[leg]]
+    return(legend)
+}
+
+legend <- g_legend(p)
+
+# Reposition the legend onto the actual plot
+reposition_legend <- function(legend, x, y){
+    legend$vp <- viewport(x = x, y = y, width = unit(0.1, "npc"), height = unit(0.1, "npc"))
+    return(legend)
+}
+
+combined_plot + annotation_custom(grob = reposition_legend(legend, 0.8, 0.8))
+```
+
+```{r}
+get_only_legend <- function(graph4) {
+    
+# get tabular interpretation of plot
+plot_table <- ggplot_gtable(ggplot_build(graph4)) 
+    
+#  Mark only legend in plot
+legend_plot <- which(sapply(plot_table$grobs, function(x) x$name) == "guide-box") 
+                              
+# extract legend
+legend <- plot_table$grobs[[legend_plot]]
+                              
+# return legend
+return(legend) 
+}
+legend <- g_legend(p)
+```
+
+```{r}
+grid.arrange(combined_plot, legend, ncol=2)
+```
+
+**Construcción de modelos estadísticos**
+
+*Regresión Simple*
+
+```{r}
+data
+```
+
+```{r}
+ggplot(data,aes(x = PhenolicContent, y =  AntioxidantCapacity)) + 
+  geom_point() +
+  geom_smooth(method = "lm", se=FALSE) 
+  labs(x = "Contenido Fenólico", y = "Capacidad Antioxidante")
+```
+
+```{r}
+#Modelo saturado
+fit.AntioxidantCapacity <- lm( AntioxidantCapacity~ PhenolicContent, data = data)
+#Parámetros estimados
+tab_model(fit.AntioxidantCapacity,
+show.r2 = TRUE,
+show.p = FALSE)
+```
+
+```{r}
+# Residuos y medidas de diagnóstico
+diagnostico.AntioxidantCapacity <- fortify(fit.AntioxidantCapacity)
+# Gráfico de residuos estandarizados vs ajustados
+ggplot(diagnostico.AntioxidantCapacity, aes(x = .fitted, y = .stdresid)) + 
+  geom_point() + 
+  stat_smooth(method = "lm", se = FALSE) +
+  theme_bw()
+```
+
+```{r}
+#Normalidad de los errores
+ols_test_normality(fit.AntioxidantCapacity)
+
+```
+
+Ambos test el de Shapiro-Wilk y el de Kolmogorov-Smirnov salen no siginficativos, por lo tanto los errores si distribuyen de forma normal.
+
+```{r}
+#Vamos a quitar el dato que se nos va
+newdata <- data[-7,]
+newdata
+```
+
+```{r}
+#Gráfico
+ggplot(newdata,aes(x = PhenolicContent, y =  AntioxidantCapacity)) + 
+  geom_point() +
+  geom_smooth(method = "lm", se=FALSE) 
+  labs(x = "Contenido Fenólico", y = "Capacidad Antioxidante")
+```
+
+```{r}
+#Modelo saturado
+fit.AntioxidantCapacityv2 <- lm( AntioxidantCapacity~ PhenolicContent, data = newdata)
+#Parámetros estimados
+tab_model(fit.AntioxidantCapacityv2,
+show.r2 = TRUE,
+show.p = FALSE)
+```
+
+A pesar de quitar el punto el p-valor sigue siendo muy bajo. No tiene pinta que sea una regresión lineal.
+
+```{r}
+# Residuos y medidas de diagnóstico
+diagnostico.AntioxidantCapacityv2 <- fortify(fit.AntioxidantCapacityv2)
+# Gráfico de residuos estandarizados vs ajustados
+ggplot(diagnostico.AntioxidantCapacityv2, aes(x = .fitted, y = .stdresid)) + 
+  geom_point() + 
+  stat_smooth(method = "lm", se = FALSE) +
+  theme_bw()
+```
+
+Al quitar ese punto vemos que ahora todos los datos están en el rango correcto.
+
+**Modelo parábolico**
+
+```{r}
+#Modelo saturado
+fit.AntioxidantCapacityv3 <- lm( AntioxidantCapacity~ PhenolicContent + I(PhenolicContent^2) + I(PhenolicContent^3), data = newdata)
+#Parámetros estimados
+tab_model(fit.AntioxidantCapacityv3,
+show.r2 = TRUE,
+show.p = FALSE)
+
+#Gráfico
+plot_model(fit.AntioxidantCapacityv3, "pred",
+ci.lvl = NA,
+show.data = TRUE,
+title = "Modelo ajustado")
+```
+
+Voy a probar a quitar el dato que está en 4.
+
+```{r}
+newdatav2 <- newdata[-10,]
+newdatav2
+```
+
+```{r}
+#Modelo saturado
+fit.AntioxidantCapacityv4 <- lm( AntioxidantCapacity~ PhenolicContent + Concentration, data = newdatav2)
+#Parámetros estimados
+tab_model(fit.AntioxidantCapacityv4,
+show.r2 = TRUE,
+show.p = FALSE)
+
+#Gráfico
+plot_model(fit.AntioxidantCapacityv4, "pred",
+ci.lvl = NA,
+show.data = TRUE,
+title = "Modelo ajustado")
+```
+
+```{r}
+ols_step_backward_p(fit.AntioxidantCapacityv4, prem = 0.05)
+```
+
+Por lo que estamos viendo tenemos un R cercano a 0,6. No hay interacción entre las variables y ambas variables dice que se comportan de manera lineal.
+
+**Modelo ANCOVA Pretratamiento/No pretratamiento**
+
+```{r}
+# Representación del modelo
+## Comenzamos con el modelo más sencillo
+
+## Modelo con una única recta
+M0 <- lm(AntioxidantCapacity~ PhenolicContent, data = newdatav2)
+
+## M1: modelo con rectas paralelas
+M1 <- lm(AntioxidantCapacity~ PhenolicContent + Pretratamiento, data = newdatav2)
+
+## M2: modelo con rectas no paralelas
+M2 <- lm(AntioxidantCapacity~ PhenolicContent + Pretratamiento + PhenolicContent:Pretratamiento , data = newdatav2)
+
+## grid de valores para construir los modelos
+grid <- newdatav2 %>% data_grid(PhenolicContent, Pretratamiento) %>% 
+   gather_predictions(M0, M1, M2)
+
+## Gráfico
+ggplot(newdatav2,aes(PhenolicContent, AntioxidantCapacity, colour = Pretratamiento)) + 
+  geom_point() + 
+  geom_line(data = grid, aes(y = pred)) +
+  facet_wrap(~ model) +
+  labs(x = "Contenido fenólico", y = "Capacidad antioxidante") 
+```
+
+```{r}
+glance(M2)
+```
+
+**Modelo suavizado**
+
+Ahora quiero aplicarle suavizado al que lleva pretratamiento.
+
+```{r}
+# M3: modelo suavizado
+M3 <- gam(AntioxidantCapacity ~ Pretratamiento + s(PhenolicContent, k = 10, m = 2, bs = "ps"), 
+                 data = newdata)
+plot_model(M3, "pred",
+           show.data = TRUE, 
+           ci.lvl = NA, 
+           title = "Modelo Suavizado")
+summary(M3)
+
+
+```
+
+Voy a poner las variables como factores.
+
+```{r}
+str(newdatav2)
+```
+
+```{r}
+newdatav3 <- as.data.frame(unclass (newdatav2), stringsAsFactors = TRUE)
+str(newdatav3)
+```
+
+Voy a repetir a ver si con la variable de tipo factor R me deja hacer el modelo de suavizado.
+
+```{r}
+# M3: modelo suavizado
+M3 <- gam(AntioxidantCapacity ~ Pretratamiento + s(PhenolicContent, k = 7, m = 2, bs = "ps", by=Pretratamiento ), 
+                 data = newdatav3)
+plot_model(M3, "pred", terms = c("PhenolicContent", "Pretratamiento"), 
+           show.data = TRUE, ci.lvl = FALSE,
+           title ="Modelo suavizado con interacción")
+```
+
+```{r}
+summary(M3)
+```
+
+```{r}
+citation()
+```
+
+### Datos sin medias
+
+```{r}
+file.choose()
+```
+
+```{r}
+ruta_excel2 <- "C:\\Screening6\\DatosS6Rsinmedias.xlsx"
+data2 <- read_excel(ruta_excel2)
+data2
+str(data2)
+```
+
+```{r}
+#Cambiamos la variable a factor
+data2$Muestra_f <- factor(data2$Sample)
+# Asignamos los niveles
+levels(data2$Muestra_f) <- as.character(1:16)
+# Veamos como queda el banco de datos
+data2
+```
+
+```{r}
+ggplot(data2, aes(x = Muestra_f, y = Folin)) + 
+  geom_point() + 
+  labs(x = "Muestra", y = "Folin")
+ggplot(data2, aes(x = Muestra_f, y = TEAC)) + 
+  geom_point() + 
+  labs(x = "Muestra", y = "TEAC")
+ggplot(data2, aes(x = Muestra_f, y = Rendimiento)) + 
+  geom_point() + 
+  labs(x = "Muestra", y = "Rendimiento")
+```
+
+```{r}
+newdata2 <- as.data.frame(unclass (data2), stringsAsFactors = TRUE)
+str(newdata2)
+#Cambiamos la variable a factor
+newdata2$Muestra_f <- factor(newdata2$Sample)
+# Asignamos los niveles
+levels(newdata2$Muestra_f) <- as.character(1:16)
+# Veamos como queda el banco de datos
+str(newdata2)
+
+```
+
+```{r}
+graph2.1<- ggplot(newdata2,aes(x = PajaType , y = TEAC)) +
+  labs(y= "Capacidad antioxidante", x = NULL, title = "A") +
+  geom_boxplot() +
+  stat_summary(fun.y=mean, geom="point", shape=15, size=2, color="black", fill="black")
+graph2.1
+```
+
+```{r}
+fit.TEAC.PajaType <- lm(TEAC ~ PajaType, data = newdata2)
+TukeyHSD(fit.TEAC.PajaType)
+ols_test_normality(fit.TEAC.PajaType)
+```
+
+```{r}
+graph2.2<- ggplot(newdata2,aes(x = PajaType , y = Folin)) + labs(y=    "Contenido polifenólico", x = NULL, title = "B") + 
+  geom_boxplot() +
+  stat_summary(fun.y=mean, geom="point", shape=15, size=2, color="black", fill="black")
+graph2.2
+```
+
+```{r}
+fit.Folin.PajaType<- lm(Folin ~ PajaType, data = newdata2)
+TukeyHSD(fit.Folin.PajaType) 
+ols_test_normality(fit.Folin.PajaType)
+```
+
+```{r}
+graph2.3<- ggplot(newdata2,aes(x = PajaType , y = Rendimiento)) +labs(y= "Rendimiento", x = NULL, title = "C") +
+ geom_boxplot() + 
+  stat_summary(fun.y=mean, geom="point", shape=15, size=2, color="black", fill="black")
+graph2.3
+```
+
+```{r}
+fit.Rendimiento.PajaType<- lm(Rendimiento ~ PajaType, data = newdata2)
+TukeyHSD(fit.Rendimiento.PajaType) 
+ols_test_normality(fit.Rendimiento.PajaType)
+```
+
+```{r}
+graph2.4 <- ggplot(newdata2,aes(x = Celulase, y = TEAC , color = Mgcelulasa, legend.position = "none")) + labs(y= "Capacidad antioxidante", x = "Celulasa", title = "A") + theme(axis.title.x = element_text(size=10)) + 
+geom_boxplot(show.legend = FALSE)  
+```
+
+```{r}
+fit.TEAC.Celulase <- lm(TEAC ~ Celulase, data = newdata2)
+TukeyHSD(fit.TEAC.Celulase)
+ols_test_normality(fit.TEAC.Celulase)
+```
+
+```{r}
+graph2.5 <- ggplot(newdata2,aes(x = Celulase, y = Rendimiento , color = Mgcelulasa)) + labs(y= "Capacidad antioxidante", x = "Celulasa") + labs(y= "Rendimiento", x = "Celulasa", title = "B") + theme(axis.title.x = element_text(size=10)) +
+geom_boxplot(show.legend = FALSE) 
+```
+
+```{r}
+fit.Rendimiento.Celulase <- lm(Rendimiento ~ Celulase, data = newdata2)
+TukeyHSD(fit.Rendimiento.Celulase)
+ols_test_normality(fit.Rendimiento.Celulase)
+```
+
+```{r}
+graph2.6 <- ggplot(newdata2,aes(x = Celulase, y = Folin, color = Mgcelulasa)) + labs(y= "Contenido polifenólico", x = "Celulasa", title = "C")  + theme(axis.title.x = element_text(size=10)) + 
+geom_boxplot(show.legend = FALSE) 
+```
+
+```{r}
+fit.Folin.Celulase <- lm(Folin ~ Celulase, data = newdata2)
+TukeyHSD(fit.Folin.Celulase)
+ols_test_normality(fit.Folin.Celulase)
+```
+
+```{r}
+arranged_plots2 <- grid.arrange(graph2.4, graph2.5,graph2.6, legend, ncol=2)
+arranged_plots2 
+```
+
+# Screening 7
+
+**Datos crudos**
+
+```{r}
+file.choose()
+```
+
+```{r}
+ruta_excel3 <- "C:\\Screening6\\S7DATA4R.xlsx"
+dataS7 <- read_excel(ruta_excel3)
+dataS7
+```
+
+```{r}
+dataS7$Pretratamiento <- as.factor(dataS7$Pretratamiento)
+str(dataS7)
+```
+
+```{r}
+graphS7.1 <- ggplot(dataS7,aes(x = Pretratamiento , y = Folin)) +labs(y= "Contenido polifenólico", x = "Pretratamiento", title = "C") +
+geom_boxplot() + 
+  stat_summary(fun.y=mean, geom="point", shape=21, size=1, color="black", fill="black")
+graphS7.1
+```
+
+```{r}
+# Ajuste del modelo
+fit.Folin.Pret <- lm(Folin ~ Pretratamiento, data = dataS7)
+TukeyHSD(fit.Folin.Pret) 
+ols_test_normality(fit.Folin.Pret)
+```
+
+```{r}
+fit.Rendimiento.Pret <- lm(Rendimiento ~ Pretratamiento, data = dataS7)
+TukeyHSD(fit.Rendimiento.Pret)
+ols_test_normality(fit.Rendimiento.Pret)
+```
+
+```{r}
+fit.TEAC.Pret <- lm(TEAC ~ Pretratamiento, data = dataS7)
+TukeyHSD(fit.TEAC.Pret)
+ols_test_normality(fit.TEAC.Pret)
+```
+
+```{r}
+graphS7.2 <- ggplot(dataS7,aes(x = Pretratamiento , y = TEAC)) +labs(y= "Capacidad antioxidante", x = "Pretratamiento", title = "A") +
+geom_boxplot() + 
+  stat_summary(fun.y=mean, geom="point", shape=21, size=1, color="black", fill="black")
+graphS7.2
+```
+
+```{r}
+graphS7.3 <- ggplot(dataS7,aes(x = Pretratamiento , y = Rendimiento)) +labs(y= "Rendimiento", x = "Pretratamiento", title = "B") +
+geom_boxplot()+ 
+  stat_summary(fun.y=mean, geom="point", shape=21, size=1, color="black", fill="black")
+graphS7.3
+```
+
+```{r}
+grid.arrange(graphS7.2,graphS7.3,graphS7.1, ncol=2)
+```
+
+# 
+
+```{r}
+grid.arrange(graph2.1,graph2.2,graph2.3, ncol=3)
+```

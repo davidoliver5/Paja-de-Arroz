@@ -1,0 +1,35 @@
+---
+title: "h"
+author: "David"
+date: "2023-06-14"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+file.choose()
+```
+
+```{r}
+ruta_excelFilt <- "C:\\Screening6\\PurificationFilter.xlsx"
+dataFilt <- read_excel(ruta_excelFilt)
+dataFilt
+```
+
+```{r}
+dataFilt$Sample <- as.factor(dataFilt$Sample)
+str(dataFilt)
+```
+
+```{r}
+ggplot(aes(x = Sample, y = Folin), data = dataFilt) + scale_y_continuous(expand = c(0,0)) +
+    stat_summary(fun=mean, geom="bar", position = position_dodge(width = 0.9), width = 0.5, fill = "aquamarine3") + stat_summary(fun.data=mean_sdl,position = position_dodge(width = 0.9) ) +
+    xlab("Muestra") + ylab("Contenido polifenólico")
+```
+
+```{r}
+colours()
+```
